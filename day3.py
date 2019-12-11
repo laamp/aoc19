@@ -1,7 +1,7 @@
-# problem 1
+##### problem 1
 import sys
 
-
+##### version 2
 def closest_intersection2(wires):
     visited_locs = {}
     intersections = []
@@ -42,6 +42,7 @@ def closest_intersection2(wires):
     return shortest_path
 
 
+##### version 1
 def closest_intersection(wires):
     paths = []
     for wire in wires:
@@ -96,6 +97,50 @@ def distance(location):
     return abs(location[0]) + abs(location[1])
 
 
+##### problem 2
+def shortest_intersection(wires):
+    visited_locs = {}  # k = location, v = list of lists [wireIdx, steps(length)]
+    shortest_connection = (
+        sys.maxsize
+    )  # keep track of shortest intersection found so far
+
+    # walk through wires
+    wireIdx = 0
+    for wire in wires:
+        x = y = 0  # location tracker
+        length = 0  # current length of the current wire
+        for vector in wire:
+            direction = vector[0]  # wire's current heading
+            steps = int(vector[1:])  # steps remaining at this heading
+
+            while steps > 0:
+                # update position
+                if direction == "U":
+                    y += 1
+                elif direction == "D":
+                    y -= 1
+                elif direction == "L":
+                    x -= 1
+                elif direction == "R":
+                    x += 1
+
+                # decrease steps, increase length
+                steps -= 1
+                length += 1
+
+                current_loc = str(x) + " " + str(y)
+                if current_loc in visited_locs:
+                    if visited_locs[current_loc][1] + length < shortest_connection:
+                        shortest_connection = visited_locs[current_loc][1] + length
+                else:
+                    visited_locs[current_loc] = [wireIdx, length]
+
+        # move to next wire
+        wireIdx += 1
+
+    return shortest_connection
+
+
 ##### file reading
 # format the input file
 wires_txt = open("./day3_input.txt")
@@ -107,9 +152,11 @@ for idx in range(len(wires)):
     wires[idx] = wires[idx].strip().split(",")
 
 ##### testing
-print(closest_intersection2(wires))
+# print(closest_intersection2(wires))
+print(shortest_intersection(wires))
 
-"""notepad
+##### notepad
+"""
 old way => [
     [[0,1], [0,2]],
     [[1,1], [0,3]]
@@ -128,5 +175,18 @@ new way => {
 
 take note of combinations that have been set already
 because this is an intersection
+
+problem 2:
+
+data from problem 1: dict = {
+    '0 1': [0, 1],
+    etc...
+}
+key is the location
+value is list of wires that exist in that location
+
+data in problem 2 will need to look like: dict = {
+    '0 1': [[wireIdx, length so far]]
+}
 
 """
