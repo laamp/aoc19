@@ -1,7 +1,45 @@
 # problem 1
 import sys
 
+
 def closest_intersection2(wires):
+    visited_locs = {}
+    intersections = []
+
+    # walk through each wire
+    wireIdx = 0
+    for wire in wires:
+        x = y = 0
+        for vector in wire:
+            direction = vector[0]
+            steps = int(vector[1:])
+
+            while steps > 0:
+                if direction == "U":
+                    y += 1
+                elif direction == "D":
+                    y -= 1
+                elif direction == "L":
+                    x -= 1
+                elif direction == "R":
+                    x += 1
+
+                steps -= 1
+                loc = str(x) + " " + str(y)
+                if loc in visited_locs and wireIdx not in visited_locs[loc]:
+                    intersections.append([x, y])
+                    visited_locs[loc].append(wireIdx)
+                else:
+                    visited_locs[loc] = [wireIdx]
+
+        wireIdx += 1
+
+    shortest_path = sys.maxsize
+    for x in intersections:
+        if distance(x) < shortest_path:
+            shortest_path = distance(x)
+
+    return shortest_path
 
 
 def closest_intersection(wires):
@@ -58,6 +96,7 @@ def distance(location):
     return abs(location[0]) + abs(location[1])
 
 
+##### file reading
 # format the input file
 wires_txt = open("./day3_input.txt")
 wires = wires_txt.readlines()
@@ -67,8 +106,8 @@ wires_txt.close()
 for idx in range(len(wires)):
     wires[idx] = wires[idx].strip().split(",")
 
-print(closest_intersection(wires))
-
+##### testing
+print(closest_intersection2(wires))
 
 """notepad
 old way => [
